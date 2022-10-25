@@ -2,8 +2,6 @@
 import random
 import math
 import copy
-import time
-import pandas as pd
 
 # global setup below
 
@@ -306,93 +304,48 @@ def Setup(climates):
     global ATTTactics
     global retreatThreshold
     global Researches
-    Researches = [0, 0]
-    GDPpercap = [0, 0]
-    DecommisionPercentages = [0, 0]
     # SHEET EXTRACTOR
     # ATT SHEET
-    SHEET_ID = input("INPUT ATT SHEET LINK (COPY PASTE): ")
-    # SHEET_ID = 'https://docs.google.com/spreadsheets/d/1hkctrmhndLacMMOcGF0yilN01bFsiEYStXm2TrtEdgg/edit#gid=1706797945'
-    SHEET_ID = SHEET_ID.replace("https://docs.google.com/spreadsheets/d/", "")
-    SHEET_ID = SHEET_ID[:44]
-    SHEET_NAME = input("INPUT ATT SHEET NAME (COPY PASTE): ")
-    # SHEET_NAME = 'Pasia1910'
-    url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
-    df = pd.read_csv(url)
-    print(df.head())
-    print(df.columns)
-    print(df['Unnamed: 11'][77])
-    print(df['Population stats GDP/cap'][0])
-    Researches[0] = float((df['Unnamed: 6'][27]).replace('$', '').replace(',', ''))
-    if Researches[0] > 0:
-        Researches[0] = (math.floor(Researches[0] / 20) + 1)
-    else:
-        Researches[0] = 0
-    GDPpercap[0] = float((df['Population stats GDP/cap'][0]).replace('$', '').replace(',', ''))
-    DecommisionPercentages[0] = float((df['Unnamed: 11'][77]).replace(' %', ''))
-    # DEF SHEET
-    SHEET_ID = input("INPUT DEF SHEET LINK (COPY PASTE): ")
-    # SHEET_ID = 'https://docs.google.com/spreadsheets/d/1hkctrmhndLacMMOcGF0yilN01bFsiEYStXm2TrtEdgg/edit#gid=1706797945'
-    SHEET_ID = SHEET_ID.replace("https://docs.google.com/spreadsheets/d/", "")
-    SHEET_ID = SHEET_ID[:44]
-    SHEET_NAME = input("INPUT DEF SHEET NAME (COPY PASTE): ")
-    # SHEET_NAME = 'Pasia1910'
-    url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
-    df = pd.read_csv(url)
-    Researches[1] = float((df['Unnamed: 6'][27]).replace('$', '').replace(',', ''))
-    if Researches[1] > 0:
-        Researches[1] = (math.floor(Researches[1] / 20) + 1)
-    else:
-        Researches[1] = 0
-    GDPpercap[1] = float((df['Population stats GDP/cap'][0]).replace('$', '').replace(',', ''))
-    DecommisionPercentages[1] = float((df['Unnamed: 11'][77]).replace(' %', ''))
-    print("RESEARCHES")
-    print(Researches)
-    print(GDPpercap)
-    print(DecommisionPercentages)
     navalBattle = int(input("Naval Battle [0] : no [1]: yes : "))
     # naval battle yes or no
     if navalBattle == 3:
         navalBattle = False
         # LAND BATTLE
-
         # TERRAIN SETUP:
         print("Terrain Knowledge 0-5 | Attacker:Defender; ex: (5:5)")
-        TerrainKnowledge = "3:5"
+        TerrainKnowledge = "2:5"
         # terrain knowledge modifier for combat effectiveness
         print("Input Climate ID (Cold Desert = Bwk")
         climateID = "Cwa"
-        # get climate for certain maluses
         climateMalusses = climates[climateID]
         print("Troop Mallusses:" + str(climates[climateID]))
         entrenchement = 0
-        # Entrenchment yes or no
         hill = 0
         river = 0
         city = 0
-        landing = 0  # these two calculated in quality
-        encircled = 0  # ^
-        fort = 1
-
+        landing = 0
+        encircled = 0
+        fort = 0
         # UNIT QUALITY:
-
-        year = 1910
-        # BELOW IS DEPECATED - richard said it was a bad idea
-        # DraftPercentage = (input("Draft % (decimal):"))
-        # Values above effect unit effectiveness aswell as the terrain stuff
-
+        GDPpercap = "1200:1200"
+        Research = "8:6"
+        year = 1913
+        DecommissionPercentage = "0:0"
+        # GM Values
+        ATTBoost = 0
+        DEFBoost = 0
+        # - These two will buff or debuff army capability if required
         # UNIT QUANTITY:
-
         print("UNIT COUNTS organize as Attacker:Defender; (x:y)")
         # P = proffesional / C = conscript
         PIrregulars = "0:0"
-        PInfantry = "270000:17089"
-        PCavalry = "10000:0"
-        PArtillery = "150:50"
-        PCars = "0:5"
+        PInfantry = "582400:285400"
+        PCavalry = "2800:6900"
+        PArtillery = "322:140"
+        PCars = "0:0"
         PTanks = "0:0"
-        CIrregulars = "0:50000"
-        CInfantry = "0:7911"
+        CIrregulars = "0:0"
+        CInfantry = "0:70100"
         CMilitia = "0:0"
         print("ARMY TACTICS organize as Attacker:Defender; ex: (Aggressive:Protective)")
 
@@ -407,11 +360,11 @@ def Setup(climates):
         reinforceDoctrine = "BR:BR"
         # Rushed reinforces / Balanced / Slow Reinforces
         print("BATTLE TACTICS: PB/BB/AB")
-        battleTactic = "AB:PB"
+        battleTactic = "AB:BB"
         # Protective/Balanced/Aggressive
         print("PURSUIT TYPES: CP/BP/RP")
         pursuitTactic = "BP:BP"
-        retreatThreshold = 65
+        retreatThreshold = 125
         # Consolidate/Balanced/Rushed
         # SEE VALUES IN SWITCH STATEMENT NEAR TOP
 
@@ -486,9 +439,12 @@ def Setup(climates):
 
         # UNIT QUALITY:
 
+        Research = (input("Research index (x:y):"))
+        GDPpercap = (input("GDP per capita (x:y):"))
         year = int(input("year (integer, x):"))
         # BELOW IS DEPECATED - richard said it was a bad idea
         # DraftPercentage = (input("Draft % (decimal):"))
+        DecommissionPercentage = (input("Decommission %  (.x:.y) (.05 = 5%):"))
         # Values above effect unit effectiveness aswell as the terrain stuff
 
         # UNIT QUANTITY:
@@ -564,18 +520,26 @@ def Setup(climates):
         reinforceDoctrines = reinforceDoctrine.split(":")
         battleTactics = battleTactic.split(":")
         pursuitTactics = pursuitTactic.split(":")
-        ATTTactics = [tactics[armyOrgs[0]], tactics[reinforceDoctrines[0]], tactics[battleTactics[0]], tactics[pursuitTactics[0]]]
-        DEFTactics = [tactics[armyOrgs[1]], tactics[reinforceDoctrines[1]], tactics[battleTactics[1]], tactics[pursuitTactics[1]]]
+        ATTTactics = [tactics[armyOrgs[0]], tactics[reinforceDoctrines[0]], tactics[battleTactics[0]],
+                      tactics[pursuitTactics[0]]]
+        DEFTactics = [tactics[armyOrgs[1]], tactics[reinforceDoctrines[1]], tactics[battleTactics[1]],
+                      tactics[pursuitTactics[1]]]
         print("Attacker Tactics:" + str(ATTTactics))
         print("Defender Tactics:" + str(DEFTactics))
-        print(type(Researches[0]))
+
         # SPLITTING PERCENTS
+        GDPpercap = GDPpercap.split(":")
+        GDPpercap = [float(i) for i in GDPpercap]
+        Researches = Research.split(":")
+        Researches = [float(i) for i in Researches]
         for i in range(len(Researches)):
             Researches[i] = Researches[i] * (0.35 * (math.log(GDPpercap[i] + 600) / math.log(math.e)) - 2.2907835)
 
         print("RESEARCHES:" + str(Researches))
         # DraftPercentages = DraftPercentage.split(":")
         # DraftPercentages = [float(i) for i in DraftPercentages]
+        DecommisionPercentages = DecommissionPercentage.split(":")
+        DecommisionPercentages = [float(i) for i in DecommisionPercentages]
         # Below thing is for ease of use:
         AttackerADVPercentages = float(
             ((1 + 4 * DecommisionPercentages[0])) * (Researches[0]) * (1 - (float(.3 * landing))) / 4)
@@ -627,11 +591,9 @@ def Setup(climates):
         # each side gets points, depending on certain attributes of the terrain
         AttackerTerrainPoints = 0
         DefenderTerrainPoints = 0
-        AttackerTerrainPoints += (TerrainKnowledge[0]) / (1 + landing * 1.2)
+        AttackerTerrainPoints += (TerrainKnowledge[0]) / (1 + landing * 1.2)+ATTBoost
         # last 3 can be 1 or 0, so 0 would contibute nothing
-        DefenderTerrainPoints += (TerrainKnowledge[
-                                      1] + 1.5 * city + 1 * hill + 1.5 * river + 1 * entrenchement + .75 * (fort)) / (
-                                         1 + encircled * 5)
+        DefenderTerrainPoints += (TerrainKnowledge[1] + 1.5 * city + 1 * hill + 1.5 * river + 1 * entrenchement + .75 * (fort)) / (1 + encircled * 5)+DEFBoost
 
         for i in range(0, len(DefenderADV)):
             DefenderADV[i] = DefenderADV[i] * ((1 + DefenderTerrainPoints / (1 + AttackerTerrainPoints)) / 2)
@@ -710,13 +672,13 @@ def Casaulties(year):
         print(DEFtotalinactive)
         ATTactivelimit = []
         DEFactivelimit = []
-        for i in range(0, 9):
+        for i in range(0, len(landUnits)):
             ATTactivelimit.append(math.floor((ATTtotal[i] / (sum(ATTtotal))) * combatWidth * ATTTactics[0][0]))
             DEFactivelimit.append(math.floor((DEFtotal[i] / (sum(DEFtotal))) * combatWidth * DEFTactics[0][0]))
         print("LIMITS")
         print(ATTactivelimit)
         print(DEFactivelimit)
-        for i in range(0, 9):  # this shit is just to run through all units, not just attackers
+        for i in range(0, len(landUnits)):  # this shit is just to run through all units, not just attackers
             # man I am a genius
             # if there is more units than can fit in the active section
             # if there is less units than can fit in the active section
@@ -747,7 +709,7 @@ def Casaulties(year):
         print("INACTIVE COMBAT:")
         print(ATTtotalinactive)
         print(DEFtotalinactive)
-        for i in range(0, 9):
+        for i in range(0, len(landUnits)):
             ATTtotal[i] = ATTtotalactive[i] + ATTtotalinactive[i]
             DEFtotal[i] = DEFtotalactive[i] + DEFtotalinactive[i]
         print("POST TOTAL")
@@ -845,7 +807,7 @@ def Casaulties(year):
                 print("INACTIVE COMBAT:")
                 print(ATTtotalinactive)
                 print(DEFtotalinactive)
-                for i in range(0, 9):
+                for i in range(0, len(landUnits)):
                     ATTtotal[i] = ATTtotalactive[i] + ATTtotalinactive[i]
                     DEFtotal[i] = DEFtotalactive[i] + DEFtotalinactive[i]
                 # above is bad practice but can't get this working without it so smd
@@ -875,14 +837,14 @@ def Casaulties(year):
                     retreat = True
                     ATTRemainingTroops = 0
                     DEFRemainingTroops = 0
-                    Ratio = 0
+                    #ratio from dead to wounded, where wounded + dead equal original size minus the remaining troops
                     ATTbattleCasaultiesRatio = max(.30, (min(.70, ((startingUnits[1]) / (startingUnits[0])))))
                     DEFbattleCasaultiesRatio = max(.30, (min(.70, ((startingUnits[0]) / (startingUnits[1])))))
                     # SCORE COUNT: Winning side surviving units / Total roll score of winner (i.e Pasia rolls a total of 78 of the 100 dice rolls compared to Carrisa's 22 of the 100)
                     for i in range(len(ATTtotal)):
                         ATTRemainingTroops += ATTtotal[i]
                         DEFRemainingTroops += DEFtotal[i]
-                    if ATTRemainingTroops > DEFRemainingTroops:
+                    if (ATTRemainingTroops/startingUnits[0])*AttackerADV[0]> (DEFRemainingTroops/startingUnits[1])*DefenderADV[0]:
                         print("################################")
                         print("ATTACK WINS")
                         print("################################")
@@ -908,28 +870,21 @@ def Casaulties(year):
                         print(ATTbattleCasaultiesRatio)
                         print(DEFbattleCasaultiesRatio)
                     print("Attacker KILLED/WOUNDED/REMAINING | Defender KILLED/WOUNDED/REMAINING(Remaining excludes Wounded)")
-                    print("Prof. Irr: " + str(round((startingunitsA[0][0] - ATTtotal[0]) * ATTbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[0][0] - ATTtotal[0]) * (1 - ATTbattleCasaultiesRatio))) + "/" + str(round(ATTtotal[0])) + " | " + str(round((startingunitsA[1][0] - DEFtotal[0]) * DEFbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[1][0] - DEFtotal[0]) * (1 - DEFbattleCasaultiesRatio))) + "/" + str(round(DEFtotal[0])))
-                    print("Prof.Inf: " + str(round((startingunitsA[0][1] - ATTtotal[1]) * ATTbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[0][1] - ATTtotal[1]) * (1 - ATTbattleCasaultiesRatio))) + "/" + str(round(ATTtotal[1])) + " | " + str(round((startingunitsA[1][1] - DEFtotal[1]) * DEFbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[1][1] - DEFtotal[1]) * (1 - DEFbattleCasaultiesRatio))) + "/" + str(round(DEFtotal[1])))
-                    print("Prof.Cav: " + str(round((startingunitsA[0][2] - ATTtotal[2]) * ATTbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[0][2] - ATTtotal[2]) * (1 - ATTbattleCasaultiesRatio))) + "/" + str(round(ATTtotal[2])) + " | " + str(round((startingunitsA[1][2] - DEFtotal[2]) * DEFbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[1][2] - DEFtotal[2]) * (1 - DEFbattleCasaultiesRatio))) + "/" + str(round(DEFtotal[2])))
-                    print("Artillery" + str(round((startingunitsA[0][3] - ATTtotal[3]) * ATTbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[0][3] - ATTtotal[3]) * (1 - ATTbattleCasaultiesRatio))) + "/" + str(round(ATTtotal[3])) + " | " + str(round((startingunitsA[1][3] - DEFtotal[3]) * DEFbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[1][3] - DEFtotal[3]) * (1 - DEFbattleCasaultiesRatio))) + "/" + str(round(DEFtotal[3])))
-                    print("Cars" + str(round((startingunitsA[0][4] - ATTtotal[4]) * ATTbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[0][4] - ATTtotal[4]) * (1 - ATTbattleCasaultiesRatio))) + "/" + str(round(ATTtotal[4])) + " | " + str(round((startingunitsA[1][4] - DEFtotal[4]) * DEFbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[1][4] - DEFtotal[4]) * (1 - DEFbattleCasaultiesRatio))) + "/" + str(round(DEFtotal[4])))
-                    print("Tanks" + str(round((startingunitsA[0][5] - ATTtotal[5]) * ATTbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[0][5] - ATTtotal[5]) * (1 - ATTbattleCasaultiesRatio))) + "/" + str(round(ATTtotal[5])) + " | " + str(round((startingunitsA[1][5] - DEFtotal[5]) * DEFbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[1][5] - DEFtotal[5]) * (1 - DEFbattleCasaultiesRatio))) + "/" + str(round(DEFtotal[5])))
-                    print("Con Irr" + str(round((startingunitsA[0][6] - ATTtotal[6]) * ATTbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[0][6] - ATTtotal[6]) * (1 - ATTbattleCasaultiesRatio))) + "/" + str(round(ATTtotal[6])) + " | " + str(round((startingunitsA[1][6] - DEFtotal[6]) * DEFbattleCasaultiesRatio)) + "/" + str(round((startingunitsA[1][6] - DEFtotal[6]) * (1 - DEFbattleCasaultiesRatio))) + "/" + str(round(DEFtotal[6])))
-                    print("Con Inf" + str(
-                        round((startingunitsA[0][7] - ATTtotal[7]) * ATTbattleCasaultiesRatio)) + "/" + str(
-                        round((startingunitsA[0][7] - ATTtotal[7]) * (1 - ATTbattleCasaultiesRatio))) + "/" + str(
-                        round(ATTtotal[7])) + " | " + str(
-                        round((startingunitsA[1][7] - DEFtotal[7]) * DEFbattleCasaultiesRatio)) + "/" + str(
-                        round((startingunitsA[1][7] - DEFtotal[7]) * (1 - DEFbattleCasaultiesRatio))) + "/" + str(
-                        round(DEFtotal[7])))
-                    print("Con Militia" + str(
-                        round((startingunitsA[0][8] - ATTtotal[8]) * ATTbattleCasaultiesRatio)) + "/" + str(
-                        round((startingunitsA[0][8] - ATTtotal[8]) * (1 - ATTbattleCasaultiesRatio))) + "/" + str(
-                        round(ATTtotal[8])) + " | " + str(
-                        round((startingunitsA[1][8] - DEFtotal[8]) * DEFbattleCasaultiesRatio)) + "/" + str(
-                        round((startingunitsA[1][8] - DEFtotal[8]) * (1 - DEFbattleCasaultiesRatio))) + "/" + str(
-                        round(DEFtotal[8])))
+                    postBattlePrefixes = ["Prof. Irr: ", "Prof. Inf: ", "Prof. Cav: ", "Artillery: ", "Cars: ", "Tanks: ", "Con. Irr: ", "Con. Inf: ", "Con. Mil: ", ]
+                    for i in range(len(ATTtotal)):
+                        SigFig = 1
+                        if (startingunitsA[1][i] > 1000 or startingunitsA[1][i] == 0) and (startingunitsA[1][i] > 1000 or startingunitsA[1][i] == 0):
+                            SigFig = 100
+                            # SigFig = 10**(min(len(str(ATTtotal[i])),len(str(DEFtotal[i]))))
+                        elif (startingunitsA[1][i] > 100 or startingunitsA[1][i] == 0) and (startingunitsA[1][i] > 100 or startingunitsA[1][i] == 0):
+                            SigFig = 10
+                        roundedTotalA = (math.floor(((startingunitsA[0][i] - ATTtotal[i]) * ATTbattleCasaultiesRatio) / SigFig) * SigFig) + (math.floor(((startingunitsA[0][i] - ATTtotal[i]) * (1 - ATTbattleCasaultiesRatio)) / SigFig) * SigFig) + (math.ceil(ATTtotal[i] / SigFig) * SigFig)
+                        roundedTotalD = (math.floor(((startingunitsA[1][i] - DEFtotal[i]) * DEFbattleCasaultiesRatio) / SigFig) * SigFig) + (math.floor(((startingunitsA[1][i] - DEFtotal[i]) * (1 - DEFbattleCasaultiesRatio)) / SigFig) * SigFig) + (math.ceil(DEFtotal[i] / SigFig) * SigFig)
 
+                        print(
+                            postBattlePrefixes[i] + str(math.floor(((startingunitsA[0][i] - ATTtotal[i]) * ATTbattleCasaultiesRatio) / SigFig) * SigFig) + "/" + str(math.floor(((startingunitsA[0][i] - ATTtotal[i]) * (1 - ATTbattleCasaultiesRatio)) / SigFig) * SigFig) + "/" + str(math.ceil(ATTtotal[i] / SigFig) * SigFig + startingunitsA[0][i] - roundedTotalA) + " | " + str(math.floor(((startingunitsA[1][i] - DEFtotal[i]) * DEFbattleCasaultiesRatio) / SigFig) * SigFig) + "/" + str(math.floor(((startingunitsA[1][i] - DEFtotal[i]) * (1 - DEFbattleCasaultiesRatio)) / SigFig) * SigFig) + "/" + str(
+                                math.ceil(DEFtotal[i] / SigFig) * SigFig + startingunitsA[1][i] - roundedTotalD))
+                    print(retreatChance >= retreatThreshold or sum(ATTtotalactive) < rollAmountDEF * 2 or sum(DEFtotalactive) < rollAmountATT * 2)
                     print("BATTLE OVER")
                     input("Press enter to exit")
                 # SCORE COUNT: Winning side surviving units / Total roll score of winner (i.e Pasia rolls a total of 78 of the 100 dice rolls compared to Carrisa's 22 of the 100)
